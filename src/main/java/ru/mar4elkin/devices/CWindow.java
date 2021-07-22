@@ -13,4 +13,12 @@ public class CWindow extends CBaseDevice {
         super(id, ip, name, lastConnect, deviceType);
         this.position = position;
     }
+
+    public EWindowPosition getPosition() {
+        return this.position;
+    }
+
+    public void setPosition(EWindowPosition position) {
+        this.position = position;
+    }
 }

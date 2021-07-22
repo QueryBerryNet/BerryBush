@@ -12,4 +12,12 @@ public class CThermometer extends CBaseDevice {
         super(id, ip, name, lastConnect, deviceType);
         this.temp = temp;
     }
+
+    public float getTemp() {
+        return this.temp;
+    }
+
+    public void setTemp(float temp) {
+        this.temp = temp;
+    }
 }

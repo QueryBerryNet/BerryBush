@@ -10,10 +10,7 @@ repositories {
 }
 
 dependencies {
-    testImplementation group: 'org.hsqldb', name: 'hsqldb', version: '2.6.0'
-    implementation group: 'org.sql2o', name: 'sql2o', version: '1.5.4'
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
+
 }
 
 test {
