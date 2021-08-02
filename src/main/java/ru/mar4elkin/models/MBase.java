@@ -1,8 +1,6 @@
 package ru.mar4elkin.models;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.stream.Collectors;
 
@@ -10,6 +8,7 @@ public class MBase {
 
     Connection connection;
     String url;
+    String sqlString;
 
     public MBase(String driver, String host, String dbname, String username, String password) {
         //TODO: добавить проверки
@@ -25,13 +24,37 @@ public class MBase {
         }
     }
 
-    public String insert(String tableName, ArrayList<String> cols, ArrayList<String> rows) {
+    public String getRawSql() {
+        return this.sqlString;
+    }
 
+    public ResultSet executeQuery() {
+        try {
+            Statement statement = this.connection.createStatement();
+            return statement.executeQuery(this.sqlString += ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public int executeUpdate() {
+        try {
+            Statement statement = this.connection.createStatement();
+            return statement.executeUpdate(this.sqlString += ";");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    public MBase insert(String tableName, ArrayList<String> cols, ArrayList<String> rows) {
         String query = "INSERT INTO " + tableName + " (";
         query = query.concat(cols.stream().collect(Collectors.joining(",")));
         query = query.concat(") VALUES (");
         query = query.concat(rows.stream().collect(Collectors.joining(",")));
-        return query.concat(");");
+        this.sqlString = query.concat(")");
+        return this;
     }
 
     public String select() {
@@ -54,8 +77,9 @@ public class MBase {
         return "";
     }
 
-    public String where(String s, String col, String value) {
-        return s.concat(" WHERE " + col + " = " + value);
+    public MBase where(String col, String value) {
+        this.sqlString += " WHERE " + col + " = " + value;
+        return this;
     }
 
 }

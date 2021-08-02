@@ -17,7 +17,8 @@ public class Main {
         rows.add("row1");
         rows.add("row2");
 
-        String test = mbase.insert("testTable", cols, rows);
-        System.out.println(test.where());
+        String test = mbase.insert("testTable", cols, rows).where("col1", "row1").getRawSql();
+        System.out.println(test);
+
     }
 }
