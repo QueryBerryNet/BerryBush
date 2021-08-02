@@ -2,6 +2,9 @@ package ru.mar4elkin.models;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 public class MBase {
@@ -57,12 +60,29 @@ public class MBase {
         return this;
     }
 
-    public String select() {
-        return "";
+    public MBase select(String tableName, ArrayList<String> cols) {
+        String query = "SELECT ";
+        query = query.concat(cols.stream().collect(Collectors.joining(",")));
+        query += " FROM " + tableName;
+        this.sqlString = query;
+        return this;
     }
 
-    public String update() {
-        return "";
+    public MBase update(String tableName, HashMap<String, String> colValue) {
+        String query = "UPDATE " + tableName + " SET ";
+
+        int i = 0;
+        for (Map.Entry<String, String> entry : colValue.entrySet()) {
+            String key = entry.getKey();
+            String value = entry.getValue();
+            if (i++ == colValue.size() -1) {
+                query += key + " = " + value;
+            } else {
+                query += key + " = " + value + ", ";
+            }
+        }
+        this.sqlString = query;
+        return this;
     }
 
     public String delete() {
