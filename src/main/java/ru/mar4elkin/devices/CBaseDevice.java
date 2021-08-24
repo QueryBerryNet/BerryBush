@@ -2,6 +2,7 @@ package ru.mar4elkin.devices;
 
 import ru.mar4elkin.devices.enums.EAvailableDevices;
 
+import java.util.HashMap;
 import java.util.Date;
 
 public class CBaseDevice {
@@ -58,6 +59,16 @@ public class CBaseDevice {
 
     public void setDeviceType(EAvailableDevices deviceType) {
         this.deviceType = deviceType;
+    }
+
+    public HashMap<String, Object> getAll() {
+        HashMap<String, Object> fields = new HashMap<String, Object>();
+        fields.put("device_id", this.deviceId);
+        fields.put("ip_address", this.ipAddress);
+        fields.put("name", this.name);
+        fields.put("last_connect", this.lastConnect);
+        fields.put("device_type", this.deviceType);
+        return fields;
     }
 
 }

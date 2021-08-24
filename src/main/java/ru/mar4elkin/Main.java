@@ -1,37 +1,38 @@
 package ru.mar4elkin;
 
-import ru.mar4elkin.models.MBase;
+import ru.mar4elkin.datastorage.CBase;
+import ru.mar4elkin.datastorage.CDevice;
+import ru.mar4elkin.devices.CBaseDevice;
+import ru.mar4elkin.devices.CThermometer;
+import ru.mar4elkin.devices.CWindow;
+import ru.mar4elkin.devices.enums.EAvailableDevices;
+import ru.mar4elkin.devices.enums.EWindowPosition;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 
 public class Main {
 
     public static void main(String[] args) {
-        MBase mbase = new MBase("mysql", "127.0.0.1", "laravel", "root", "");
 
-        ArrayList<String> cols = new ArrayList<String>();
-        ArrayList<String> rows = new ArrayList<String>();
-        ArrayList<String> colsSelect = new ArrayList<String>();
+        CThermometer cThermometer = new CThermometer(
+                1, "127.0.0.1", "test_name", new Date(2021, 2, 3),
+                EAvailableDevices.Thermometer, 37f
+        );
 
-        cols.add("col1");
-        cols.add("col2");
-        rows.add("row1");
-        rows.add("row2");
-        colsSelect.add("*");
+        CWindow cWindow = new CWindow(
+                1, "127.0.0.1", "test_name", new Date(2021, 2, 3),
+                EAvailableDevices.Window, EWindowPosition.Closed
+        );
 
-        String test = mbase.insert("testTable", cols, rows).where("col1", "row1").getRawSql();
-        System.out.println(test);
+        ArrayList<CBaseDevice> iotDeviceList = new ArrayList<CBaseDevice>();
+        iotDeviceList.add(cThermometer);
+        iotDeviceList.add(cWindow);
 
-        String test1 = mbase.select("blabla", cols).getRawSql();
-        System.out.println(test1);
+        CDevice cDevice = new CDevice("mysql", "127.0.0.1", "laravel", "root", "", iotDeviceList);
+        cDevice.initializeDevice();
 
-        HashMap<String, String> colvals = new HashMap<String, String>();
-        colvals.put("col1", "some_value");
-        colvals.put("col2", "some_value2");
-
-        String test2 = mbase.update("blabla", colvals).getRawSql();
-        System.out.println(test2);
 
     }
 }
