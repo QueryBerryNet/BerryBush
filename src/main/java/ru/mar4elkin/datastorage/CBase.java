@@ -102,18 +102,39 @@ public class CBase {
         return this;
     }
 
-    public String sqlDatatypeMapping(CBaseDevice variable) {
+    private static String toString(Object[] a) {
+        if (a == null)
+            return "null";
+
+        int iMax = a.length - 1;
+        if (iMax == -1)
+            return "[]";
+
+        StringBuilder b = new StringBuilder();
+        b.append('(');
+        for (int i = 0; ; i++) {
+            b.append("'");
+            b.append(String.valueOf(a[i]));
+            b.append("'");
+            if (i == iMax)
+                return b.append(')').toString();
+            b.append(", ");
+        }
+    }
+
+    public CBase sqlDatatypeMapping(CBaseDevice variable) {
         StringBuilder sql = new StringBuilder();
         sql.append("CREATE TABLE ")
                 .append(variable.getDeviceType())
                 .append(" (\n");
         for (Map.Entry<String, Object> entry : variable.getAll().entrySet()) {
-            if (entry.getValue() instanceof String)
+            if (entry.getValue() instanceof String) {
                 sql.append(entry.getKey())
                         .append(" ")
                         .append(ESqlTypes.VARCHAR.toStr())
-                        .append("(255)\n");
-            else if (entry.getValue() instanceof Integer && entry.getKey().equals("device_id"))
+                        .append("(255),\n");
+            }
+            else if (entry.getValue() instanceof Integer && entry.getKey().equals("device_id")) {
                 sql.append(entry.getKey())
                         .append(" ")
                         .append(ESqlTypes.INT.toStr())
@@ -121,35 +142,38 @@ public class CBase {
                         .append(ESqlAttrs.PK.toStr())
                         .append(" ")
                         .append(ESqlAttrs.AUTO_INCREMENT.toStr())
-                        .append("\n");
-            else if (entry.getValue() instanceof Integer)
+                        .append(",\n");
+            }
+            else if (entry.getValue() instanceof Integer) {
                 sql.append(entry.getKey())
                         .append(" ")
                         .append(ESqlTypes.INT.toStr())
-                        .append("\n");
-            else if (entry.getValue() instanceof Date)
+                        .append(",\n");
+            }
+            else if (entry.getValue() instanceof Date) {
                 sql.append(entry.getKey())
                         .append(" ")
                         .append(ESqlTypes.DATE.toStr())
-                        .append("\n");
-            else if (entry.getValue() instanceof Enum)
+                        .append(",\n");
+            }
+            else if (entry.getValue() instanceof Enum) {
                 sql.append(entry.getKey())
                         .append(" ")
                         .append(ESqlTypes.ENUM.toStr())
-                        .append(
-                                Arrays.toString(entry.getValue().getClass().getEnumConstants())
-                                .replace("[", "(")
-                                .replace("]", ")")
-                        )
-                        .append("\n");
-            else if (entry.getValue() instanceof Float)
+                        .append(toString(entry.getValue().getClass().getEnumConstants()))
+                        .append(",\n");
+            }
+            else if (entry.getValue() instanceof Float) {
                 sql.append(entry.getKey())
                         .append(" ")
                         .append(ESqlTypes.BOOLEAN.toStr())
-                        .append("\n");
+                        .append(",\n");
+            }
         }
+        sql.setLength(sql.length() -2);
         sql.append(");");
-        return sql.toString();
+        this.sqlString = sql.toString();
+        return this;
     }
 
 }

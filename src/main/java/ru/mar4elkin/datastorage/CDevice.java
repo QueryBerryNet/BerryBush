@@ -2,6 +2,9 @@ package ru.mar4elkin.datastorage;
 
 import ru.mar4elkin.devices.CBaseDevice;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Map;
 
@@ -29,11 +32,23 @@ public class CDevice extends CBase {
         this.device = devices;
     }
 
+    public void createProjectDirectory() {
+        String dir = System.getProperty("user.home") + "\\.berrybrush";
+        try {
+            Files.createDirectories(Path.of(dir));
+            System.out.println("Directory is created!");
+        } catch (IOException e) {
+            System.err.println("Failed to create directory!" + e.getMessage());
+        }
+    }
+
     public void initializeDevice() {
         this.device.forEach((dev) -> {
-            System.out.println(this.sqlDatatypeMapping(dev));
+            this.sqlDatatypeMapping(dev).executeUpdate();
         });
     }
+
+    public void addDevice() {}
 
     public void updateDevice() {}
 
