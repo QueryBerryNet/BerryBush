@@ -1,34 +1,35 @@
 package ru.mar4elkin.devices;
 
+import ru.mar4elkin.datastorage.interfaces.ISqlConstants;
+import ru.mar4elkin.datastorage.enums.ESqlAttrs;
 import ru.mar4elkin.devices.enums.EAvailableDevices;
+import ru.mar4elkin.devices.interfaces.IRunableGetter;
 
-import java.util.HashMap;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.util.Date;
 
 public class CBaseDevice {
 
-    protected int deviceId;
+    @ISqlConstants(constants = {
+        ESqlAttrs.PK,
+        ESqlAttrs.AUTO_INCREMENT,
+        ESqlAttrs.NOT_NULL
+    })
+    protected int id;
     protected String ipAddress;
     protected String name;
     protected Date lastConnect;
     protected EAvailableDevices deviceType;
 
-    public CBaseDevice(int id, String ip, String name, Date lastConnect, EAvailableDevices deviceType) {
-        this.deviceId = id;
+    public CBaseDevice(String ip, String name, Date lastConnect, EAvailableDevices deviceType) {
         this.ipAddress = ip;
         this.name = name;
         this.lastConnect = lastConnect;
         this.deviceType = deviceType;
     }
 
-    public int getDeviceId() {
-        return this.deviceId;
-    }
-
-    public void setDeviceId(int deviceId) {
-        this.deviceId = deviceId;
-    }
-
+    @IRunableGetter
     public String getIpAddress() {
         return this.ipAddress;
     }
@@ -37,6 +38,7 @@ public class CBaseDevice {
         this.ipAddress = ipAddress;
     }
 
+    @IRunableGetter
     public String getName() {
         return this.name;
     }
@@ -45,6 +47,7 @@ public class CBaseDevice {
         this.name = name;
     }
 
+    @IRunableGetter
     public Date getLastConnect() {
         return this.lastConnect;
     }
@@ -53,22 +56,13 @@ public class CBaseDevice {
         this.lastConnect = lastConnect;
     }
 
+    @IRunableGetter
     public EAvailableDevices getDeviceType() {
         return this.deviceType;
     }
 
     public void setDeviceType(EAvailableDevices deviceType) {
         this.deviceType = deviceType;
-    }
-
-    public HashMap<String, Object> getAll() {
-        HashMap<String, Object> fields = new HashMap<String, Object>();
-        fields.put("device_id", this.deviceId);
-        fields.put("ip_address", this.ipAddress);
-        fields.put("name", this.name);
-        fields.put("last_connect", this.lastConnect);
-        fields.put("device_type", this.deviceType);
-        return fields;
     }
 
 }
