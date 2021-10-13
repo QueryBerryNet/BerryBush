@@ -1,7 +1,7 @@
 package ru.mar4elkin.datastorage.enums;
 
 public enum ESqlTypes {
-    VARCHAR("VARCHAR"),
+    VARCHAR("VARCHAR(256)"),
     INT("INT"),
     BOOLEAN("BOOL"),
     DATE("DATE"),
