@@ -16,14 +16,17 @@ import java.lang.reflect.Method;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Map;
+import java.sql.ResultSet;
+import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
+import java.util.*;
 
+// Дальше бога нет!
 public class CDevice extends CBase {
 
     ArrayList<CBaseDevice> device;
     String dir;
+    String dbname;
 
     /**
      * В конструкторе создается url для подключение к базе данных и собственно подключение к ней
@@ -40,6 +43,7 @@ public class CDevice extends CBase {
      */
     public CDevice(String driver, String host, String dbname, String username, String password) {
         super(driver, host, dbname, username, password);
+        this.dbname = dbname;
         this.dir = System.getProperty("user.home") + "\\.berrybrush";
     }
 
@@ -60,24 +64,41 @@ public class CDevice extends CBase {
         }
     }
 
+    // создает таблицы по статическому классу
     public void initDatabase(ArrayList<Class> devices) {
         devices.forEach((dev) -> {
             this.createTableByStaticClass(dev).executeUpdate();
         });
     }
 
-    public void addDevice(CBaseDevice obj) throws InvocationTargetException, IllegalAccessException {
-        this.InsertByObject(obj);
+    // добавляет устройство по обьекту класса
+    public void add(CBaseDevice obj) throws InvocationTargetException, IllegalAccessException, SQLException {
+        this.insertByObject(obj);
     }
 
-    public void updateDevice() {}
+    // select по стат. классу
+    public void get(Class device) {
+        this.selectRowsByStaticClass(device);
+    }
 
-    public void deleteDevice() {}
+    public void update(CBaseDevice obj) {
+        this.updateByObject(obj);
+    }
+
+    public void delete() {}
 
     //TODO: Перенести все что связанно с парсингом в sql строку в отдельный класс CJavaToSqlParser
     private String parseToSqlStringNameAndType(String name, Object object, ISqlConstants annotation, String sql) {
         if(object == String.class) {
-            sql += name + " " + ESqlTypes.VARCHAR.toStr() + ",\n";
+            if (annotation != null) {
+                sql += name + " " + ESqlTypes.VARCHAR.toStr();
+                for (ESqlAttrs a: annotation.constants()) {
+                    sql += " " + a.toStr();
+                }
+                sql += ",\n";
+            } else {
+                sql += name + " " + ESqlTypes.VARCHAR.toStr() + ",\n";
+            }
         }
 
         if(object == BOOLEAN.class) {
@@ -100,6 +121,10 @@ public class CDevice extends CBase {
             sql += name + " " + ESqlTypes.DATE.toStr() + ",\n";
         }
 
+        if(object == float.class) {
+            sql += name + " " + ESqlTypes.FLOAT.toStr() + ",\n";
+        }
+
         if(object instanceof Class && ((Class<?>) object).isEnum()) {
             sql += name + " " + ESqlTypes.ENUM.toStr() + " (";
             Object[] possibleValues = ((Class<?>) object).getEnumConstants();
@@ -110,6 +135,14 @@ public class CDevice extends CBase {
             sql += "),\n";
         }
         return sql;
+    }
+
+    private void selectRowsByStaticClass(Class variable) {
+        ArrayList<String> cols = new ArrayList<>();
+        cols.add("*");
+        this.select(variable.getSimpleName(), cols);
+        System.out.println(this.getRawSql());
+
     }
 
     private CBase createTableByStaticClass(Class variable) {
@@ -151,15 +184,15 @@ public class CDevice extends CBase {
 
                     if (type == Date.class && m.invoke(obj) == null) {
                         stringObject = "2020-01-01 10:10:1";
+                    } else if (m.invoke(obj) != null) {
+                        cols.add(methodName);
+                        rows.add(stringObject);
                     }
-
-                    cols.add(methodName);
-                    rows.add(stringObject);
                 }
             }
     }
 
-    private void InsertByObject(CBaseDevice obj) throws IllegalArgumentException, IllegalAccessException, InvocationTargetException {
+    private void insertByObject(CBaseDevice obj) throws InvocationTargetException, IllegalAccessException, SQLException {
         ArrayList<String> cols = new ArrayList<String>();
         ArrayList<String> rows = new ArrayList<String>();
 
@@ -169,8 +202,33 @@ public class CDevice extends CBase {
         }
 
         Method[] methods = this.getClass().getDeclaredMethods();
+        ArrayList<String> colsSelect = new ArrayList<String>();
+        colsSelect.add("*");
+
+        //TODO: Нужно записывать задом на перед, сраный hashmap как вариант использывать tree map и hashmap внутри
+        HashMap<ESqlAttrs, String> filters = new HashMap<>();
+        filters.put(ESqlAttrs.LIMIT, "1");
+        filters.put(ESqlAttrs.DESC, null);
+        filters.put(ESqlAttrs.ORDER_BY, "id");
+
+        System.out.println(cols);
+
         this.executeGetters(methods, obj, cols, rows);
         this.insert(obj.getClass().getSimpleName().toLowerCase(), cols, rows).executeUpdate();
+
+        ResultSet rs = this.select(obj.getClass().getSimpleName().toLowerCase(), colsSelect)
+            .filter(filters)
+            .executeQuery();
+
+        while(rs.next()) {
+            int id = Integer.parseInt(rs.getString("id"));
+            obj.setId(id);
+        }
+        rs.close();
+    }
+
+    private void updateByObject(CBaseDevice obj) {
+        System.out.println(obj.getId());
     }
 
 }

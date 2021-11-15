@@ -1,6 +1,8 @@
 package ru.mar4elkin.datastorage;
 
 import ru.mar4elkin.datastorage.enums.EJoin;
+import ru.mar4elkin.datastorage.enums.ESqlAttrs;
+
 import java.sql.*;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -114,6 +116,27 @@ public class CBase {
 
     public CBase join(EJoin joinType, String tableName, String col1, String col2) {
         this.sqlString += " " + joinType.toStr() + " " + tableName + " ON " + col1 + "=" + col2;
+        return this;
+    }
+
+    public CBase filter(HashMap<ESqlAttrs, String> sqlAttrValue) {
+        StringBuilder query = new StringBuilder();
+        for (Map.Entry<ESqlAttrs, String> entry : sqlAttrValue.entrySet()) {
+            ESqlAttrs key = entry.getKey();
+            String value = entry.getValue();
+            if (value == null) {
+                query.append(" ");
+                query.append(key.toStr());
+                query.append(" ");
+            } else {
+                query.append(" ");
+                query.append(key.toStr());
+                query.append(" ");
+                query.append(value);
+                query.append(" ");
+            }
+        }
+        this.sqlString += query.toString();
         return this;
     }
 

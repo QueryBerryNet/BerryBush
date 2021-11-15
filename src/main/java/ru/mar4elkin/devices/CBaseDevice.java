@@ -18,6 +18,9 @@ public class CBaseDevice {
     })
     protected int id;
     protected String ipAddress;
+    @ISqlConstants(constants = {
+            ESqlAttrs.UNIQUE
+    })
     protected String name;
     protected Date lastConnect;
     protected EAvailableDevices deviceType;
@@ -28,6 +31,11 @@ public class CBaseDevice {
         this.lastConnect = lastConnect;
         this.deviceType = deviceType;
     }
+
+    @IRunableGetter
+    public int getId() { return this.id; }
+
+    public void setId(int id) { this.id = id; }
 
     @IRunableGetter
     public String getIpAddress() {

@@ -5,7 +5,10 @@ public enum ESqlAttrs {
     UNIQUE("UNIQUE"),
     NULL("NULL"),
     PK("PRIMARY KEY"),
-    NOT_NULL("NOT NULL");
+    NOT_NULL("NOT NULL"),
+    LIMIT("LIMIT"),
+    DESC("DESC"),
+    ORDER_BY("ORDER BY");
 
     private final String estr;
 

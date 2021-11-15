@@ -5,6 +5,7 @@ public enum ESqlTypes {
     INT("INT"),
     BOOLEAN("BOOL"),
     DATE("DATE"),
+    FLOAT("FLOAT"),
     ENUM("ENUM");
 
     private final String estr;
