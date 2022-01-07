@@ -1,24 +1,16 @@
 {
-  "name": "BerryBrush",
-  "version": "0.0.1",
+  "name": "berrybush",
+  "version": "1.0.0",
   "main": "index.js",
-  "author": "mar4elkin",
-  "license": "MIT",
   "scripts": {
-    "start": "yarn babel-node index.js"
+    "start": "node ./src/index.js"
   },
-  "env": {
-    "express": 2203,
-    "websocket": 9000
-  },
-  "devDependencies": {
-    "@babel/core": "^7.16.0",
-    "@babel/node": "^7.16.0",
-    "@babel/preset-env": "^7.16.4"
-  },
+  "author": "mar4elkin (Mark Tamarov)",
+  "license": "MIT",
   "dependencies": {
-    "express": "^4.17.1",
+    "express": "^4.17.2",
     "mongodb": "^4.2.0",
-    "ws": "^8.2.3"
+    "socket.io": "^4.4.0",
+    "socket.io-client": "^4.4.0"
   }
 }
