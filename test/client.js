@@ -1,5 +1,5 @@
 const io = require('socket.io-client');
-const socket = io.connect('http://localhost:3000', {reconnect: true});
+const socket = io.connect('http://localhost:1488', {reconnect: true});
 
 let baseIotManifest = {
     manifestVersion: "0.0.2",
@@ -13,7 +13,7 @@ let baseIotManifest = {
         stateCurrent: "open",
         stateAvailable: ["open", "closed"]
       },
-      sensors: []
+      sensor: ""
     },
     socketId: "",
   }

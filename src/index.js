@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const http = require('http')
 const server = http.createServer(app)
+const cors = require('cors')
 
 const { Server } = require("socket.io")
 const io = new Server(server)
@@ -12,6 +13,7 @@ const manifestHandler = new ManifestHandler()
 const bodyParser = require("body-parser")
 const pjson = require('../package.json');
 
+app.use(cors())
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
@@ -74,6 +76,6 @@ io.on('connection', (client) => {
   })
 })
 
-server.listen(3000, () => {
-  console.log('listening on *:3000');
+server.listen(1488, () => {
+  console.log('listening on *:1488');
 })
